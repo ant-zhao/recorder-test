@@ -53,7 +53,6 @@ export default {
                     that.levelChecker = levelChecker;
 
                     const stopRecorder = debounce(that.stopRecording, 3000); // 防抖延迟5s停止录音
-
                     audioInput.connect(levelChecker); //将该分析对象与麦克风音频进行连接
                     levelChecker.onaudioprocess = function(e) { //开始处理音频
                         let buffer = e.inputBuffer.getChannelData(0); //获得缓冲区的输入音频，转换为包含了PCM通道数据的32位浮点数组
@@ -61,13 +60,7 @@ export default {
                         //显示音量值
                         if(maxvo>.5){
                             console.log("开始说话了："+Math.round(maxvo*100));
-                            if(that.isRecording) return;
-                            that.isRecording = true;
                             that.startRecording();  // 开始录音
-                        } else {
-                            if(that.isRecording)console.log("不说话了："+Math.round(maxvo*100));
-                            if(!that.isRecording) return;
-                            that.isRecording = false;
                             stopRecorder();  // 停止录音
                         }
                     };
@@ -94,12 +87,16 @@ export default {
             }
         },
         startRecording() {
+            if(this.isRecording) return;
+            this.isRecording = true;
             console.log("开始录音");
             this.recorder = new Recorder(this.audioInput,{numChannels:1, sampleRate: 16000});
             this.recorder.record();
         },
         stopRecording() {
             const that = this;
+            if(!that.isRecording) return;
+            that.isRecording = false;
             console.log("停止录音");
             that.recorder.stop();
             that.recorder.exportWAV(function(blob) {
