@@ -79,7 +79,7 @@
                     sampleRate = undefined,
                     numChannels = undefined;
     
-                self.onmessage = function (e) {
+                this.self.onmessage = function (e) {
                     switch (e.data.command) {
                         case 'init':
                             init(e.data.config);
@@ -126,7 +126,7 @@
                     var dataview = encodeWAV(interleaved);
                     var audioBlob = new Blob([dataview], { type: type });
     
-                    self.postMessage({ command: 'exportWAV', data: audioBlob });
+                    this.self.postMessage({ command: 'exportWAV', data: audioBlob });
                 }
     
                 function getBuffer() {
@@ -134,7 +134,7 @@
                     for (var channel = 0; channel < numChannels; channel++) {
                         buffers.push(mergeBuffers(recBuffers[channel], recLength));
                     }
-                    self.postMessage({ command: 'getBuffer', data: buffers });
+                    this.self.postMessage({ command: 'getBuffer', data: buffers });
                 }
     
                 function clear() {

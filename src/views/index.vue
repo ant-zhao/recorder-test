@@ -55,13 +55,17 @@ export default {
                     const stopRecorder = debounce(that.stopRecording, 3000); // 防抖延迟5s停止录音
                     audioInput.connect(levelChecker); //将该分析对象与麦克风音频进行连接
                     levelChecker.onaudioprocess = function(e) { //开始处理音频
-                        let buffer = e.inputBuffer.getChannelData(0); //获得缓冲区的输入音频，转换为包含了PCM通道数据的32位浮点数组
-                        const maxvo = Math.max.apply(null, buffer);
-                        //显示音量值
-                        if(maxvo>.5){
-                            console.log("开始说话了："+Math.round(maxvo*100));
-                            that.startRecording();  // 开始录音
-                            stopRecorder();  // 停止录音
+                        try {
+                            let buffer = e.inputBuffer.getChannelData(0); //获得缓冲区的输入音频，转换为包含了PCM通道数据的32位浮点数组
+                            const maxvo = Math.max.apply(null, buffer);
+                            //显示音量值
+                            if(maxvo>.5){
+                                console.log("开始说话了："+Math.round(maxvo*100));
+                                that.startRecording();  // 开始录音
+                                stopRecorder();  // 停止录音
+                            }
+                        } catch (error) {
+                            console.log("哪里错了==》",error)
                         }
                     };
                     audioInput.connect(levelChecker);
@@ -88,10 +92,16 @@ export default {
         },
         startRecording() {
             if(this.isRecording) return;
-            this.isRecording = true;
-            console.log("开始录音");
-            this.recorder = new Recorder(this.audioInput,{numChannels:1, sampleRate: 16000});
-            this.recorder.record();
+            try {
+                this.isRecording = true;
+                console.log("开始录音");
+                this.recorder = new Recorder(this.audioInput,{numChannels:1, sampleRate: 16000});
+                this.$nextTick(() => {
+                    this.recorder.record();
+                })
+            } catch (error) {
+                console.log("录音失败==》",error);
+            }
         },
         stopRecording() {
             const that = this;
