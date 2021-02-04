@@ -4,7 +4,7 @@ import 'nprogress/nprogress.css';
 NProgress.configure({ showSpinner: false });
 
 router.beforeEach((to, from, next) => {
-    NProgress.start()
+    NProgress.start();
     to.meta.title && (document.title = to.meta.title);
     next();
 })

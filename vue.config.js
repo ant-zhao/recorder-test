@@ -4,7 +4,7 @@ function resolve (dir) {
 }
 module.exports = {
     lintOnSave: false,
-    publicPath: "/",  // env.BASE_URL = options.publicPath
+    publicPath: '/recorder/',
     devServer: {
         port: 8082,
         https: true,
